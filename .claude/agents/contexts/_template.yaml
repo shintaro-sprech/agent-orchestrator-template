@@ -1,0 +1,47 @@
+# Project Context Template
+# Copy this file and rename to {domain}.yaml when creating new contexts
+# Define project-specific context information
+
+# The domain this context applies to
+domain: "{domain-name}"
+
+# Corresponding built-in agent (see registry.yaml)
+applies_to: "{builtin-agent-name}"
+
+# Project-specific information
+project_specifics:
+
+  # Technology stack being used
+  stack:
+    - "Technology/Framework 1"
+    - "Technology/Framework 2"
+
+  # Implementation patterns in this project
+  patterns:
+    - "Pattern 1 (e.g., Components place custom hooks in hooks/)"
+    - "Pattern 2 (e.g., APIs are placed under /api/v1/)"
+
+  # Constraints to follow
+  constraints:
+    - "Constraint 1 (e.g., UTF-8 without BOM required)"
+    - "Constraint 2 (e.g., Files that must not be edited directly)"
+
+  # Files requiring special attention
+  critical_files:
+    - path: "path/to/file"
+      note: "Note (e.g., Over 1,800 lines, use subcomponents instead of direct edit)"
+
+  # Related files
+  related_files:
+    - "path/to/config"
+    - "path/to/entry-point"
+
+# Relationships with other contexts
+related_contexts:
+  - context: "{other-domain}"
+    relationship: "Description of relationship"
+
+# Usage examples for this context
+examples:
+  - task: "Task description"
+    approach: "Approach when using this context"

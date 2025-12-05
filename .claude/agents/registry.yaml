@@ -1,0 +1,150 @@
+# Agent Registry - Mapping between built-in agents and project contexts
+# Reference this file to select the optimal agent for each task
+
+version: "2.0"
+description: |
+  This registry maps Claude Code's built-in agents (Task tool's subagent_type)
+  to project-specific contexts.
+
+  Important: These agents are built into Claude Code's system.
+  They are NOT dynamically loaded from .md files.
+
+# Built-in agent list
+# Only agents defined in Claude Code's system prompt are available
+builtin_agents:
+
+  # === Development ===
+  frontend-dev:
+    description: Frontend development with React/Vite/TypeScript
+    model: opus
+    use_when:
+      - Creating/modifying React components
+      - Fixing frontend bugs
+      - CSS/styling changes
+      - Implementing React Hooks
+    avoid_when:
+      - API endpoint-only changes
+      - Backend-exclusive logic
+    context_file: contexts/frontend.yaml
+
+  backend-dev:
+    description: Backend development with FastAPI/Pydantic
+    model: opus
+    use_when:
+      - Adding/modifying API endpoints
+      - Implementing authentication logic
+      - DB connection/query implementation
+      - Defining Pydantic models
+    avoid_when:
+      - Frontend-only changes
+      - UI/UX modifications
+    context_file: contexts/backend.yaml
+
+  # === Testing & Quality ===
+  test-runner:
+    description: Test execution/creation with Vitest/pytest
+    use_when:
+      - Creating tests after feature implementation
+      - Modifying existing tests
+      - Checking coverage
+      - Pre-CI verification
+    avoid_when:
+      - Production code implementation (tests only)
+
+  code-refactorer:
+    description: Code structure/readability improvement
+    use_when:
+      - Reducing duplicate code
+      - Improving naming
+      - Simplifying complex logic
+      - Code restructuring
+    avoid_when:
+      - Adding new features
+      - Bug fixes (without structural changes)
+
+  security-auditor:
+    description: Security audit/vulnerability detection
+    model: opus
+    use_when:
+      - Security reviews
+      - Vulnerability scans
+      - Authentication/authorization audits
+      - OWASP checks
+
+  # === Documentation & Research ===
+  doc-writer:
+    description: Documentation/report creation
+    use_when:
+      - Creating daily reports
+      - Updating specifications
+      - Updating CLAUDE.md
+      - Creating Markdown documentation
+
+  lib-researcher:
+    description: Library research/API specification verification
+    model: opus
+    use_when:
+      - Evaluating new library adoption
+      - Checking official documentation
+      - Researching best practices
+
+  # === Exploration & Planning ===
+  Explore:
+    description: Codebase exploration (fast)
+    use_when:
+      - File searching
+      - Code searching
+      - Understanding structure
+    note: Can specify thoroughness (quick/medium/very thorough)
+
+  Plan:
+    description: Implementation planning design
+    use_when:
+      - Complex feature design
+      - Architectural decisions
+      - Trade-off analysis
+
+  general-purpose:
+    description: General-purpose agent (complex multi-step tasks)
+    use_when:
+      - Compound tasks
+      - Work that doesn't fit specific agents
+
+  # === Specialized (project-dependent) ===
+  # The following are examples of project-specific agent definitions
+  # Availability as actual built-in agents depends on
+  # Claude Code configuration
+
+# Selection priority guide
+selection_priority:
+  - rule: "Single domain task"
+    action: "Select the relevant specialized agent"
+  - rule: "Multi-domain task"
+    action: "Select primary domain agent, or use general-purpose"
+  - rule: "Research/exploration only"
+    action: "Use Explore agent"
+  - rule: "Testing required"
+    action: "Run test-runner additionally after implementation"
+
+# Compound task splitting examples
+compound_task_examples:
+  - task: "Create a new API endpoint and call it from the frontend"
+    split:
+      - step: 1
+        agent: backend-dev
+        action: "Implement API endpoint"
+      - step: 2
+        agent: frontend-dev
+        action: "Call API from frontend"
+      - step: 3
+        agent: test-runner
+        action: "Create and run tests"
+
+  - task: "Investigate and fix performance issues"
+    split:
+      - step: 1
+        agent: Explore
+        action: "Identify bottlenecks"
+      - step: 2
+        agent: "{relevant-agent}"
+        action: "Implement fix"

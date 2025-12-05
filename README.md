@@ -1,131 +1,138 @@
-# Agent Orchestrator Template
+# Autonomous Orchestration Ecosystem
 
-A self-evolving subagent management system for Claude Code. Instead of manually managing agents, let an orchestrator automatically compose, merge, and create agents based on task requirements.
+A self-evolving sub-agent management system for Claude Code. Instead of manually managing agents, let an orchestrator automatically compose, merge, and evolve agents based on task requirements.
 
 > **Original concept by [@shintaro_sprech](https://x.com/shintaro_sprech)**
 
+![Autonomous Orchestration Ecosystem](docs/images/orchestration-flow.jpg)
+
 ## Concept
 
-![Self-evolving Orchestration Ecosystem](docs/images/orchestration-flow.jpg)
+Multiple implementations feed into **Initial Sub-agent Pools**, which flow through the **Orchestrator Engine**. The engine continuously evolves agents through:
 
-Traditional workflow:
-```
-Task → Human selects agent → Execute → Agents accumulate → Human manually reorganizes
-```
+- **Specialized Sub-agents** → 1st Gen Integration → 2nd Gen Integration
+- **Hyper-Elite Integration** → Ultimate Elite Integration
+- An **Infinite Evolution Cycle** that continuously improves agent capabilities
 
-Orchestrated workflow:
 ```
-Task → Orchestrator analyzes → Optimal agent auto-selected/generated → Execute → Agents evolve naturally
+Implementation → Multiple Sub-agents → Orchestrator Engine → Evolution Cycle → Hyper-Elite Entity
 ```
 
 ## Key Features
 
-- **Autonomous agent selection**: Orchestrator evaluates task against existing agents
+- **Autonomous agent selection**: Orchestrator evaluates tasks against existing agents
 - **Dynamic merging**: Combines agents when synergy improves outcomes
 - **Automatic specialization**: Creates new focused agents when gaps exist
-- **Natural evolution**: Strong agents survive, weak ones fade through disuse
+- **Infinite evolution**: Strong agents evolve through generations, weak ones fade
 - **Lineage tracking**: Merged agents remember their parents, enabling evolution chains
-
-## Quick Start
-
-### 1. Copy to your project
-
-```bash
-# Copy the .claude directory to your project
-cp -r .claude /path/to/your/project/
-
-# Copy example file and rename (or append to existing)
-cp CLAUDE.md.example /path/to/your/project/CLAUDE.md
-```
-
-### 2. Add orchestration rules to CLAUDE.md
-
-Add the content from `CLAUDE.md.example` to your project's `CLAUDE.md`.
-
-### 3. Start using
-
-The orchestrator will automatically:
-1. Analyze each task you give
-2. Scan existing agent skill sheets
-3. Decide: use existing / merge / create new
-4. Execute with optimal configuration
-5. Report what agents were used or created
 
 ## Directory Structure
 
 ```
 your-project/
 ├── .claude/
+│   ├── settings.json          # Hooks config (reminder on Task usage)
 │   └── agents/
-│       ├── orchestrator.md      # Orchestrator logic
-│       └── manifests/           # Agent skill sheets
-│           ├── _template.yaml   # Template for new agents
-│           ├── agent-a.yaml     # Auto-generated
-│           └── merged-a-b.yaml  # Auto-generated merged agent
-└── CLAUDE.md                    # Project instructions
+│       ├── selector.md        # Agent selection guide
+│       ├── registry.yaml      # Built-in agent list
+│       └── contexts/          # Project-specific contexts
+│           ├── _template.yaml
+│           └── {domain}.yaml
+└── CLAUDE.md                  # Selection criteria as Must rules
 ```
 
-## How It Works
+## Quick Start
 
-### Coverage-Based Decision
+### 1. Copy files
 
-| Task Coverage | Action |
-|---------------|--------|
-| 90%+ | Use existing agent directly |
-| 60-90% | Merge relevant agents |
-| Below 60% | Create new specialized agent |
-
-### Skill Sheet Format
-
-Every agent has a skill sheet describing its capabilities:
-
-```yaml
-name: db-expert
-version: "1.0"
-created: 2025-01-15
-parent_agents: []
-
-domain: Database operations and optimization
-
-capabilities:
-  - SQL query optimization
-  - Schema design
-  - Index strategy
-
-constraints:
-  - No frontend work
-  - No API design
-
-synergy_hints:
-  - api-expert: Strong for data-driven API endpoints
+```bash
+cp -r .claude /path/to/your/project/
 ```
 
-### Evolution Chains
+### 2. Add to CLAUDE.md
 
-Merged agents can merge again:
+Add the content from `CLAUDE.md` to your project's CLAUDE.md:
 
+```markdown
+## Agent Selection
+
+**Must**: Select appropriate `subagent_type` when using Task tool for complex tasks.
+
+| Task Type | Agent to Use |
+|-----------|--------------|
+| Frontend | `frontend-dev` |
+| Backend | `backend-dev` |
+| Testing | `test-runner` |
+...
 ```
-Generation 1: api-expert + db-expert → merged-api-db
-Generation 2: merged-api-db + cache-expert → merged-api-db-cache
-Generation 3: merged-api-db-cache + auth-expert → ...
+
+### 3. Create project context (optional)
+
+```bash
+cp .claude/agents/contexts/_template.yaml .claude/agents/contexts/frontend.yaml
+# Edit to add project-specific information
 ```
 
-Strong combinations survive through repeated use. Unused agents naturally fade.
+### 4. Start using
+
+Use Claude Code as normal. Hooks will display a reminder when Task is used.
+
+## Built-in Agent List
+
+Available `subagent_type` for Claude Code's Task tool:
+
+| Agent | Purpose | Model |
+|-------|---------|-------|
+| `frontend-dev` | React/Vite frontend development | opus |
+| `backend-dev` | FastAPI backend development | opus |
+| `test-runner` | Test execution/creation | - |
+| `code-refactorer` | Code structure/readability improvement | - |
+| `security-auditor` | Security audit | opus |
+| `doc-writer` | Documentation creation | - |
+| `lib-researcher` | Library research | opus |
+| `Explore` | Codebase exploration (fast) | - |
+| `Plan` | Implementation planning design | - |
+| `general-purpose` | General multi-step tasks | - |
+
+See `.claude/agents/registry.yaml` for details.
+
+## Enforcement Mechanisms
+
+### 1. Hooks (automatic)
+
+`.claude/settings.json` displays a reminder when Task tool is used:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Task",
+      "command": "echo '[Agent Selector] Please reference registry.yaml to select the optimal agent.'"
+    }]
+  }
+}
+```
+
+### 2. CLAUDE.md Must Rules
+
+By documenting in CLAUDE.md, Claude recognizes these as rules to prioritize.
+
+### 3. Explicit Instructions
+
+Most reliable method:
+- "Please follow the selector approach"
+- "Check registry.yaml and select the appropriate agent"
 
 ## Documentation
 
-- [Concept Deep Dive](docs/concept.md) - Philosophy and design principles
-- [Quick Start Guide](docs/quickstart.md) - Step-by-step setup
-- [Advanced Usage](docs/advanced.md) - Evolution strategies and optimization
+- [Concept Details](docs/concept.md) - Design philosophy
+- [Quick Start](docs/quickstart.md) - Setup instructions
+- [Advanced](docs/advanced.md) - Customization and operation
 
 ## License
 
-MIT License - Use freely, modify freely, share freely.
+MIT License
 
 ## Author
 
-Created by [@shintaro_sprech](https://x.com/shintaro_sprech)
-
-## Contributing
-
-Ideas and improvements welcome! This is an evolving concept.
+Original concept by [@shintaro_sprech](https://x.com/shintaro_sprech)

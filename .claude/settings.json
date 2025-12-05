@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/settings.json",
+  "description": "Agent Selector - Settings to prompt agent selection awareness when using Task tool",
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Task",
+        "command": "echo '[Agent Selector] Using Task tool. Please reference registry.yaml and selector.md to select the optimal agent.'"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Task",
+        "command": "echo '[Agent Selector] Task completed. Consider whether results are worth recording in contexts/.'"
+      }
+    ]
+  },
+
+  "permissions": {
+    "allow": [],
+    "deny": []
+  },
+
+  "env": {}
+}

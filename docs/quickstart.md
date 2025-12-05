@@ -1,118 +1,171 @@
 # Quick Start Guide
 
-Get the agent orchestrator running in your project in 5 minutes.
+Steps to introduce the Autonomous Orchestration Ecosystem to your project.
 
 ## Prerequisites
 
-- Claude Code installed and configured
-- A project where you want to use orchestrated agents
+- Claude Code installed
+- Project directory exists
 
 ## Step 1: Copy Files
 
-Copy the `.claude` directory to your project:
-
 ```bash
+# Copy entire .claude directory to project
 cp -r .claude /path/to/your/project/
+
+# Windows (PowerShell)
+Copy-Item -Recurse .claude C:\path\to\your\project\
 ```
 
-Your project should now have:
+Structure after copying:
 ```
 your-project/
 ├── .claude/
+│   ├── settings.json
 │   └── agents/
-│       ├── orchestrator.md
-│       └── manifests/
+│       ├── selector.md
+│       ├── registry.yaml
+│       └── contexts/
 │           └── _template.yaml
+└── ... (existing files)
 ```
 
-## Step 2: Update CLAUDE.md
+## Step 2: Add to CLAUDE.md
 
-Add orchestration rules to your `CLAUDE.md`:
+Add the following to your project's `CLAUDE.md`:
 
 ```markdown
-## Agent Orchestration
+## Agent Selection
 
-**All tasks must pass through the orchestrator before execution.**
+**Must**: Select appropriate `subagent_type` when using Task tool for complex tasks.
 
-1. Read `.claude/agents/orchestrator.md` for orchestration logic
-2. Scan all skill sheets in `.claude/agents/manifests/`
-3. Follow the decision matrix to determine optimal agent configuration
-4. Execute task with selected/generated agent
-5. Report results including any agent evolution
+### Selection Rules
+
+| Task Type | Agent to Use |
+|-----------|--------------|
+| Frontend (UI/React/CSS) | `frontend-dev` |
+| Backend (API/DB) | `backend-dev` |
+| Test creation/execution | `test-runner` |
+| Code refactoring | `code-refactorer` |
+| Security audit | `security-auditor` |
+| Documentation creation | `doc-writer` |
+| Library research | `lib-researcher` |
+| Codebase exploration | `Explore` |
+| Implementation planning | `Plan` |
+| Compound tasks | `general-purpose` |
+
+### Reference Files
+
+- `.claude/agents/registry.yaml` - Built-in agent list
+- `.claude/agents/selector.md` - Detailed selection guidance
+- `.claude/agents/contexts/` - Project-specific contexts
 ```
 
-## Step 3: Start Using
+## Step 3: Create Project Context (Recommended)
 
-That's it! Now when you give Claude Code a task:
-
-1. Claude reads the orchestration rules from CLAUDE.md
-2. The orchestrator analyzes your task
-3. It scans existing agents (initially empty)
-4. It creates or selects the optimal agent
-5. Task executes
-6. New agents are saved for future use
-
-## First Run Example
-
-Your first task might look like:
-
-```
-You: "Create a REST API endpoint for user authentication"
-
-Claude: 
-- Orchestrator activated
-- Scanning manifests: 0 agents found
-- Coverage: 0% - Creating new agent
-- Created: auth-api-expert
-- Skill sheet saved to .claude/agents/manifests/auth-api-expert.yaml
-- Executing task...
-[task completion]
-```
-
-Next similar task:
-
-```
-You: "Add password reset to the auth API"
-
-Claude:
-- Orchestrator activated
-- Scanning manifests: auth-api-expert found
-- Coverage: 92% - Using existing agent
-- Executing with auth-api-expert...
-[task completion]
-```
-
-## Watching Evolution
-
-As you work, check `.claude/agents/manifests/` to see your agent ecosystem grow:
+Copy and edit the template:
 
 ```bash
-ls .claude/agents/manifests/
-# _template.yaml
-# auth-api-expert.yaml
-# db-expert.yaml
-# merged-auth-db.yaml
+cp .claude/agents/contexts/_template.yaml .claude/agents/contexts/frontend.yaml
 ```
 
-Merged agents will show their lineage:
+Example (frontend.yaml):
 
 ```yaml
-# merged-auth-db.yaml
-name: merged-auth-db
-parent_agents: [auth-api-expert, db-expert]
+domain: frontend
+applies_to: frontend-dev
+
+project_specifics:
+  stack:
+    - React 19
+    - Vite 7
+    - TypeScript strict
+
+  patterns:
+    - Components placed in src/components/
+    - Custom hooks placed in src/hooks/
+    - Styles use CSS Modules
+
+  constraints:
+    - Do not edit App.tsx directly, use subcomponents
+    - UTF-8 without BOM required
+
+  critical_files:
+    - path: src/App.tsx
+      note: "Over 1,800 lines, direct editing prohibited"
+    - path: vite.config.ts
+      note: "Only location for proxy settings"
 ```
 
-## Tips for Best Results
+## Step 4: Start Using
 
-1. **Be specific in tasks**: Clear requirements help the orchestrator make better decisions
+Setup complete.
 
-2. **Let it evolve**: Don't manually create agents unless needed—let the orchestrator build them from real tasks
+### Normal Usage
 
-3. **Check the reports**: The orchestrator reports what it did—use this to understand your ecosystem
+Request tasks from Claude Code as usual:
 
-4. **Trust the process**: It might create agents you wouldn't have—that's often a good thing
+```
+"Please add an API endpoint for user authentication"
+```
+
+Hooks will display a reminder when Task is used, prompting appropriate agent selection.
+
+### Explicit Instructions
+
+For more certainty:
+
+```
+"Please follow selector.md and choose the appropriate agent"
+```
+
+Or:
+
+```
+"Use the backend-dev agent to implement the authentication API"
+```
+
+## Verification
+
+### Checking if Hooks Work
+
+When Task tool is used, the following message should appear:
+
+```
+[Agent Selector] Using Task tool. Please reference registry.yaml and selector.md to select the optimal agent.
+```
+
+If not displayed, verify `.claude/settings.json` is correctly placed.
+
+### Checking if Contexts are Referenced
+
+Ask Claude to confirm the content:
+
+```
+"Please show me the contents of .claude/agents/contexts/frontend.yaml"
+```
+
+## Troubleshooting
+
+### Hooks Not Working
+
+1. Verify `.claude/settings.json` is in project root's `.claude/`
+2. Check JSON syntax is correct
+3. Restart Claude Code
+
+### Agent Not Selected
+
+1. Verify selection rules are documented in CLAUDE.md
+2. Give explicit instruction "Please follow selector.md"
+3. Specify agent directly: "Use frontend-dev to..."
+
+### Context Being Ignored
+
+1. Verify contexts/*.yaml path is correct
+2. Check YAML syntax is correct
+3. Give explicit reference instruction: "Check contexts/frontend.yaml before proceeding"
 
 ## Next Steps
 
-- Read [Concept](concept.md) for deeper understanding
-- See [Advanced Usage](advanced.md) for optimization strategies
+- [Concept Details](concept.md) - Understand the design philosophy
+- [Advanced](advanced.md) - Customization and operation techniques

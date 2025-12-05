@@ -1,8 +1,8 @@
-# Concept: Self-Evolving Agent Ecosystem
+# Concept: Autonomous Orchestration Ecosystem
 
 ## The Problem
 
-As you work with Claude Code subagents, a pattern emerges:
+As you work with Claude Code sub-agents, a pattern emerges:
 
 1. You create specialized agents for specific tasks
 2. Agents accumulate over time
@@ -42,81 +42,72 @@ In an ecosystem:
 - New niches appear → new specialists emerge
 - Synergies discovered → mergers happen
 
-## The Three Decisions
+## The Infinite Evolution Cycle
 
-Every task triggers one of three decisions:
-
-### 1. Use Existing (Coverage 90%+)
-
-The task fits well within an existing agent's capabilities. No changes needed.
+The orchestrator enables continuous evolution:
 
 ```
-Task: "Fix the SQL injection vulnerability"
-Agent: db-expert (95% coverage)
-Action: Direct execution
+Implementation → Initial Sub-agent Pool → Orchestrator Engine
+                                              ↓
+                                    Specialized Sub-agents
+                                              ↓
+                                    1st Gen Integration
+                                              ↓
+                                    2nd Gen Integration
+                                              ↓
+                                    Hyper-Elite Integration
+                                              ↓
+                                    Ultimate Elite Integration
+                                              ↓
+                                    Hyper-Elite Integrated Entity
+                                              ↓
+                                    ← Infinite Evolution Cycle →
 ```
 
-### 2. Merge (Coverage 60-90%)
+## Enforcement Mechanisms
 
-The task spans multiple domains. Combining agents creates a better executor.
+To ensure reliable operation, the system uses multiple enforcement layers:
 
-```
-Task: "Build paginated API with optimized queries"
-Agents: api-expert (70%) + db-expert (65%)
-Action: Merge into api-db-expert
-```
+### 1. Hooks (Automatic)
 
-### 3. Create New (Coverage <60%)
+`.claude/settings.json` displays reminders when Task tool is used:
+- Pre-execution: Prompts agent selection from registry
+- Post-execution: Suggests recording insights to contexts
 
-No existing agent fits. A new specialist is born.
+### 2. CLAUDE.md Must Rules
 
-```
-Task: "Implement WebSocket real-time sync"
-Agents: None suitable
-Action: Create websocket-expert
-```
+By documenting selection rules in CLAUDE.md, Claude recognizes these as prioritized rules.
 
-## Why Merging Matters
+### 3. Explicit Instructions
 
-Merged agents aren't just combinations—they're **optimized unions**.
+For maximum certainty:
+- "Please follow the selector approach"
+- "Check registry.yaml and select the appropriate agent"
 
-When merging:
-- Redundant instructions are eliminated
-- Conflicts are resolved
-- Domain boundaries become seamless
-- The whole becomes greater than parts
+## Project Context System
 
-And merged agents can merge again:
+The `contexts/` directory supplements built-in agents with project-specific information:
 
-```
-api-expert + db-expert → merged-api-db
-merged-api-db + cache-expert → merged-api-db-cache
+```yaml
+domain: frontend
+applies_to: frontend-dev
+project_specifics:
+  stack:
+    - React 19
+    - Vite 7
+  constraints:
+    - Do not edit App.tsx directly, use subcomponents
 ```
 
-This creates **evolution chains**—progressively more capable agents.
+This allows agents to understand your project's unique patterns and constraints.
 
-## The Skill Sheet: Agent DNA
+## Practical Benefits
 
-Every agent has a skill sheet in `.claude/agents/manifests/` defining:
-
-- **Capabilities**: What it can do
-- **Constraints**: What it shouldn't do
-- **Synergy hints**: What mergers might be powerful
-
-This is the agent's DNA—readable by the orchestrator, enabling intelligent decisions.
-
-## Natural Selection in Action
-
-Over time, patterns emerge:
-
-| Pattern | Meaning | Action |
-|---------|---------|--------|
-| Agent frequently selected | Core capability | Keep and maintain |
-| Agent never selected | Obsolete | Consider deprecation |
-| Same merge repeated | Strong synergy | Make permanent |
-| Capability gap appears | New niche | Create specialist |
-
-The system learns through use, not through manual curation.
+1. **Reduced maintenance overhead**: Agents evolve naturally
+2. **Always optimal**: Each task gets the best possible executor
+3. **Continuous improvement**: Agents evolve with your needs
+4. **Knowledge preservation**: Merged agents carry parent wisdom
+5. **Reduced fragmentation**: Synergies are captured, not lost
 
 ## Philosophical Shift
 
@@ -126,11 +117,3 @@ This approach embodies a shift:
 **To:** Human as guide, agents as evolving team
 
 You set direction. The ecosystem adapts.
-
-## Practical Benefits
-
-1. **Zero maintenance overhead**: No manual reorganization
-2. **Always optimal**: Each task gets the best possible executor
-3. **Continuous improvement**: Agents evolve with your needs
-4. **Knowledge preservation**: Merged agents carry parent wisdom
-5. **Reduced fragmentation**: Synergies are captured, not lost
