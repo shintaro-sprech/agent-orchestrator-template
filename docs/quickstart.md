@@ -1,171 +1,162 @@
 # Quick Start Guide
 
-Steps to introduce the Autonomous Orchestration Ecosystem to your project.
+Get the Autonomous Orchestration Ecosystem running in your project.
 
 ## Prerequisites
 
 - Claude Code installed
-- Project directory exists
+- A project where you want to use orchestrated agents
 
 ## Step 1: Copy Files
 
 ```bash
-# Copy entire .claude directory to project
+# Copy the .claude directory to your project
 cp -r .claude /path/to/your/project/
 
 # Windows (PowerShell)
 Copy-Item -Recurse .claude C:\path\to\your\project\
 ```
 
-Structure after copying:
+Your project should now have:
 ```
 your-project/
 ├── .claude/
 │   ├── settings.json
 │   └── agents/
-│       ├── selector.md
-│       ├── registry.yaml
-│       └── contexts/
-│           └── _template.yaml
-└── ... (existing files)
+│       ├── orchestrator.md
+│       ├── _template.md
+│       ├── manifests/
+│       │   └── _template.yaml
+│       └── pool/
+│           ├── specialized/
+│           ├── integrated/
+│           └── elite/
 ```
 
-## Step 2: Add to CLAUDE.md
+## Step 2: Update CLAUDE.md
 
-Add the following to your project's `CLAUDE.md`:
+Add orchestration rules to your `CLAUDE.md`:
 
 ```markdown
-## Agent Selection
+## Agent Orchestration
 
-**Must**: Select appropriate `subagent_type` when using Task tool for complex tasks.
+**Must**: All tasks must pass through the orchestrator workflow before execution.
 
-### Selection Rules
+### Core Principle
 
-| Task Type | Agent to Use |
-|-----------|--------------|
-| Frontend (UI/React/CSS) | `frontend-dev` |
-| Backend (API/DB) | `backend-dev` |
-| Test creation/execution | `test-runner` |
-| Code refactoring | `code-refactorer` |
-| Security audit | `security-auditor` |
-| Documentation creation | `doc-writer` |
-| Library research | `lib-researcher` |
-| Codebase exploration | `Explore` |
-| Implementation planning | `Plan` |
-| Compound tasks | `general-purpose` |
+**Do NOT use pre-defined abstract agents.** Instead:
+1. Create specialized agents from actual task requirements
+2. Integrate existing agents when synergy improves outcomes
+3. Let the agent pool evolve through continuous improvement
 
-### Reference Files
+### Workflow
 
-- `.claude/agents/registry.yaml` - Built-in agent list
-- `.claude/agents/selector.md` - Detailed selection guidance
-- `.claude/agents/contexts/` - Project-specific contexts
+1. Scan `pool/` for existing agents
+2. Calculate coverage against task requirements
+3. Decide: Use existing / Integrate / Create new
+4. Execute task
+5. Update metrics in `manifests/`
+6. Promote high-performers to `elite/`
 ```
 
-## Step 3: Create Project Context (Recommended)
+## Step 3: Start Using
 
-Copy and edit the template:
+That's it! Now when you give Claude Code a task:
+
+### First Task (Empty Pool)
+
+```
+You: "Create a REST API endpoint for user authentication"
+
+Claude (via orchestrator):
+- Scanned pool/: 0 agents found
+- Coverage: 0% → Creating new specialized agent
+- Created: pool/specialized/auth-api-specialist.md
+- Created: manifests/auth-api-specialist.yaml
+- Executing task with new agent...
+[task completion]
+```
+
+### Subsequent Task (Partial Match)
+
+```
+You: "Add rate limiting to the auth API"
+
+Claude (via orchestrator):
+- Scanned pool/: auth-api-specialist found
+- Coverage: 65% → Need to integrate with rate-limiting capability
+- Created: pool/integrated/merged-auth-ratelimit.md
+- Created: manifests/merged-auth-ratelimit.yaml
+- Executing task with integrated agent...
+[task completion]
+```
+
+### High-Coverage Task
+
+```
+You: "Fix the JWT expiration bug in auth"
+
+Claude (via orchestrator):
+- Scanned pool/: auth-api-specialist found
+- Coverage: 95% → Using existing agent
+- Executing task with auth-api-specialist...
+- Updated metrics: usage_count=3, success_rate=1.0
+[task completion]
+```
+
+## Watching Evolution
+
+Check the agent pool as it grows:
 
 ```bash
-cp .claude/agents/contexts/_template.yaml .claude/agents/contexts/frontend.yaml
+ls .claude/agents/pool/specialized/
+# auth-api-specialist.md
+# db-query-optimizer.md
+
+ls .claude/agents/pool/integrated/
+# merged-auth-ratelimit.md
+# merged-api-db.md
+
+ls .claude/agents/pool/elite/
+# (empty initially, populated as agents are promoted)
 ```
 
-Example (frontend.yaml):
+Check skill sheets:
+
+```bash
+cat .claude/agents/manifests/auth-api-specialist.yaml
+```
 
 ```yaml
-domain: frontend
-applies_to: frontend-dev
-
-project_specifics:
-  stack:
-    - React 19
-    - Vite 7
-    - TypeScript strict
-
-  patterns:
-    - Components placed in src/components/
-    - Custom hooks placed in src/hooks/
-    - Styles use CSS Modules
-
-  constraints:
-    - Do not edit App.tsx directly, use subcomponents
-    - UTF-8 without BOM required
-
-  critical_files:
-    - path: src/App.tsx
-      note: "Over 1,800 lines, direct editing prohibited"
-    - path: vite.config.ts
-      note: "Only location for proxy settings"
+name: auth-api-specialist
+tier: specialized
+metrics:
+  usage_count: 5
+  success_rate: 0.8
+  last_used: 2025-01-15
 ```
 
-## Step 4: Start Using
+## Elite Promotion
 
-Setup complete.
+When an agent meets the criteria:
+- `usage_count >= 5`
+- `success_rate >= 0.8`
 
-### Normal Usage
+The orchestrator will:
+1. Move the agent to `pool/elite/`
+2. Update the skill sheet `tier: elite`
 
-Request tasks from Claude Code as usual:
+## Tips for Best Results
 
-```
-"Please add an API endpoint for user authentication"
-```
+1. **Be specific in tasks**: Clear requirements help the orchestrator create focused agents
 
-Hooks will display a reminder when Task is used, prompting appropriate agent selection.
+2. **Let it evolve**: Don't manually create agents—let the orchestrator build them from real tasks
 
-### Explicit Instructions
+3. **Check the manifests**: See which agents are performing well, which need work
 
-For more certainty:
-
-```
-"Please follow selector.md and choose the appropriate agent"
-```
-
-Or:
-
-```
-"Use the backend-dev agent to implement the authentication API"
-```
-
-## Verification
-
-### Checking if Hooks Work
-
-When Task tool is used, the following message should appear:
-
-```
-[Agent Selector] Using Task tool. Please reference registry.yaml and selector.md to select the optimal agent.
-```
-
-If not displayed, verify `.claude/settings.json` is correctly placed.
-
-### Checking if Contexts are Referenced
-
-Ask Claude to confirm the content:
-
-```
-"Please show me the contents of .claude/agents/contexts/frontend.yaml"
-```
-
-## Troubleshooting
-
-### Hooks Not Working
-
-1. Verify `.claude/settings.json` is in project root's `.claude/`
-2. Check JSON syntax is correct
-3. Restart Claude Code
-
-### Agent Not Selected
-
-1. Verify selection rules are documented in CLAUDE.md
-2. Give explicit instruction "Please follow selector.md"
-3. Specify agent directly: "Use frontend-dev to..."
-
-### Context Being Ignored
-
-1. Verify contexts/*.yaml path is correct
-2. Check YAML syntax is correct
-3. Give explicit reference instruction: "Check contexts/frontend.yaml before proceeding"
+4. **Trust integration**: When the orchestrator wants to merge agents, let it—integration often produces better results than using separate agents
 
 ## Next Steps
 
-- [Concept Details](concept.md) - Understand the design philosophy
-- [Advanced](advanced.md) - Customization and operation techniques
+- Read [Concept](concept.md) for deeper understanding
+- See [Advanced](advanced.md) for optimization strategies

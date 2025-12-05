@@ -1,18 +1,22 @@
 {
   "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/settings.json",
-  "description": "Agent Selector - Settings to prompt agent selection awareness when using Task tool",
+  "description": "Autonomous Orchestration Ecosystem - Hooks for agent evolution management",
 
   "hooks": {
     "PreToolUse": [
       {
         "matcher": "Task",
-        "command": "echo '[Agent Selector] Using Task tool. Please reference registry.yaml and selector.md to select the optimal agent.'"
+        "command": "echo '[Orchestrator] Before spawning sub-agent: Have you scanned pool/ and evaluated coverage? New/integrated agents should be saved to pool/ with skill sheets in manifests/.'"
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Task",
-        "command": "echo '[Agent Selector] Task completed. Consider whether results are worth recording in contexts/.'"
+        "command": "echo '[Orchestrator] Sub-agent completed. Update manifests/{agent}.yaml with: usage_count++, success_rate, last_used. Consider elite promotion if success_rate >= 80% and usage_count >= 5.'"
+      },
+      {
+        "matcher": "Write",
+        "command": "echo '[Orchestrator] File written. If this is a new agent definition in pool/, ensure corresponding skill sheet exists in manifests/.'"
       }
     ]
   },

@@ -2,118 +2,160 @@
 
 ## The Problem
 
-As you work with Claude Code sub-agents, a pattern emerges:
+Traditional agent management has critical flaws:
 
-1. You create specialized agents for specific tasks
-2. Agents accumulate over time
-3. Some become outdated or redundant
-4. You spend time manually reorganizing
-5. Repeat
+1. **Pre-defined abstract agents** don't match real task requirements
+2. **Manual agent selection** breaks flow and adds cognitive overhead
+3. **No evolution mechanism** - agents become outdated
+4. **Fragmentation** - too many specialized agents with overlap
 
-This manual maintenance breaks flow and adds cognitive overhead.
+## The Solution: Task-Driven Evolution
 
-## The Solution: Orchestration
+What if agents were born from actual tasks and evolved naturally?
 
-What if agents managed themselves?
+### Core Principles
 
-An **orchestrator** sits above all agents and:
-- Understands what each agent can do (via skill sheets)
-- Evaluates incoming tasks against available capabilities
-- Dynamically composes the optimal team for each task
-- Creates new agents or merges existing ones as needed
+1. **Never pre-define abstract agents**
+   - Don't create "frontend-expert" or "backend-expert" before you need them
+   - Let real tasks drive agent creation
 
-## Key Insight: Agents as Living Ecosystem
+2. **Create from actual requirements**
+   - Task: "Implement JWT authentication" → Create `jwt-auth-specialist`
+   - Task: "Optimize database queries" → Create `db-query-optimizer`
 
-Think of your agent collection as a forest, not a toolbox.
+3. **Integrate when synergy exists**
+   - Two partial matches → Merge into integrated agent
+   - Combined capabilities > sum of parts
 
-**Toolbox mindset:**
-- Static collection
-- Manual organization
-- Tools get rusty
-
-**Ecosystem mindset:**
-- Dynamic, evolving
-- Self-organizing
-- Natural selection
-
-In an ecosystem:
-- Useful agents get used → survive
-- Redundant agents get ignored → fade
-- New niches appear → new specialists emerge
-- Synergies discovered → mergers happen
+4. **Track and evolve**
+   - Measure usage and success rate
+   - Promote high performers to elite status
 
 ## The Infinite Evolution Cycle
 
-The orchestrator enables continuous evolution:
-
 ```
-Implementation → Initial Sub-agent Pool → Orchestrator Engine
-                                              ↓
-                                    Specialized Sub-agents
-                                              ↓
-                                    1st Gen Integration
-                                              ↓
-                                    2nd Gen Integration
-                                              ↓
-                                    Hyper-Elite Integration
-                                              ↓
-                                    Ultimate Elite Integration
-                                              ↓
-                                    Hyper-Elite Integrated Entity
-                                              ↓
-                                    ← Infinite Evolution Cycle →
+         ┌────────────────────────────────────────────────────┐
+         │            Infinite Evolution Cycle                │
+         └────────────────────────────────────────────────────┘
+                              ↓
+    ┌──────────────────────────────────────────────────────────┐
+    │                   Orchestrator Engine                     │
+    │  • Scan pool/     • Calculate coverage    • Decide       │
+    └──────────────────────────────────────────────────────────┘
+                              ↓
+    ┌─────────────────┬─────────────────┬─────────────────────┐
+    │ Coverage < 60%  │ Coverage 60-90% │ Coverage 90%+       │
+    │ Create NEW      │ INTEGRATE       │ USE existing        │
+    │ specialized     │ multiple agents │ agent directly      │
+    └─────────────────┴─────────────────┴─────────────────────┘
+                              ↓
+    ┌──────────────────────────────────────────────────────────┐
+    │                    Execute Task                           │
+    └──────────────────────────────────────────────────────────┘
+                              ↓
+    ┌──────────────────────────────────────────────────────────┐
+    │              Update Metrics in manifests/                 │
+    │  • usage_count++  • success_rate  • last_used            │
+    └──────────────────────────────────────────────────────────┘
+                              ↓
+    ┌──────────────────────────────────────────────────────────┐
+    │         Elite Promotion (if qualified)                    │
+    │  • usage_count >= 5  AND  success_rate >= 80%            │
+    └──────────────────────────────────────────────────────────┘
+                              ↓
+         ┌────────────────────────────────────────────────────┐
+         │            Infinite Evolution Cycle                │
+         └────────────────────────────────────────────────────┘
 ```
 
-## Enforcement Mechanisms
+## Agent Tiers
 
-To ensure reliable operation, the system uses multiple enforcement layers:
+### Specialized (pool/specialized/)
 
-### 1. Hooks (Automatic)
+- **Born from**: New task with no good existing match
+- **Purpose**: Single-domain expertise
+- **Lifecycle**: May be integrated or promoted
 
-`.claude/settings.json` displays reminders when Task tool is used:
-- Pre-execution: Prompts agent selection from registry
-- Post-execution: Suggests recording insights to contexts
+### Integrated (pool/integrated/)
 
-### 2. CLAUDE.md Must Rules
+- **Born from**: Merging 2+ partial-match agents
+- **Purpose**: Multi-domain synergy
+- **Lifecycle**: 1st Gen → 2nd Gen → ... → may be promoted
 
-By documenting selection rules in CLAUDE.md, Claude recognizes these as prioritized rules.
+### Elite (pool/elite/)
 
-### 3. Explicit Instructions
+- **Born from**: Promotion of high-performers
+- **Criteria**: usage_count >= 5 AND success_rate >= 0.8
+- **Purpose**: Proven, reliable agents
 
-For maximum certainty:
-- "Please follow the selector approach"
-- "Check registry.yaml and select the appropriate agent"
+## Why Integration > Fragmentation
 
-## Project Context System
+When two agents each cover 70% of a task:
 
-The `contexts/` directory supplements built-in agents with project-specific information:
+**Bad approach (fragmentation)**:
+```
+Agent A handles part 1 → handoff → Agent B handles part 2
+Problems: Context loss, coordination overhead, potential conflicts
+```
+
+**Good approach (integration)**:
+```
+Merge Agent A + Agent B → Integrated agent handles entire task
+Benefits: Unified context, no handoff, optimized for the combination
+```
+
+## Skill Sheet: Agent DNA
+
+Every agent has a skill sheet in `manifests/` that tracks:
 
 ```yaml
-domain: frontend
-applies_to: frontend-dev
-project_specifics:
-  stack:
-    - React 19
-    - Vite 7
-  constraints:
-    - Do not edit App.tsx directly, use subcomponents
+name: auth-db-specialist
+tier: integrated
+parent_agents: [auth-specialist, db-specialist]
+
+capabilities:
+  - JWT token handling
+  - Database schema design
+  - Query optimization
+
+metrics:
+  usage_count: 7
+  success_rate: 0.86
+  last_used: 2025-01-15
+
+task_history:
+  - date: 2025-01-10
+    task: "Implement refresh token rotation"
+    outcome: success
 ```
 
-This allows agents to understand your project's unique patterns and constraints.
+This enables:
+- **Coverage calculation**: Match task requirements against capabilities
+- **Evolution tracking**: See how agents improve over time
+- **Lineage**: Understand where integrated agents came from
 
-## Practical Benefits
+## The Hyper-Elite Integrated Entity
 
-1. **Reduced maintenance overhead**: Agents evolve naturally
-2. **Always optimal**: Each task gets the best possible executor
-3. **Continuous improvement**: Agents evolve with your needs
-4. **Knowledge preservation**: Merged agents carry parent wisdom
-5. **Reduced fragmentation**: Synergies are captured, not lost
+The ultimate goal: A small pool of **Hyper-Elite** agents that can handle almost any task in your domain.
+
+These emerge naturally through:
+1. Many specialized agents created
+2. Best combinations integrated
+3. Integrations merged again (2nd Gen, 3rd Gen...)
+4. Top performers promoted to elite
+5. Elite agents further integrated → Hyper-Elite
+
+## Benefits
+
+1. **No wasted abstraction**: Every agent exists because a real task needed it
+2. **Continuous improvement**: The pool gets better with every task
+3. **Natural selection**: Good agents survive, bad ones fade
+4. **Knowledge preservation**: Integrated agents carry parent wisdom
+5. **Reduced cognitive load**: Orchestrator handles agent management
 
 ## Philosophical Shift
 
-This approach embodies a shift:
+**From**: Human pre-defines agents, manually selects for each task
+**To**: Tasks drive agent creation, orchestrator handles selection
 
-**From:** Human as manager, agents as tools
-**To:** Human as guide, agents as evolving team
-
-You set direction. The ecosystem adapts.
+You focus on the work. The ecosystem adapts.

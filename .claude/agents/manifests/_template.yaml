@@ -1,0 +1,46 @@
+# Skill Sheet Template
+# Copy and rename to {agent-name}.yaml when creating new agents
+# The orchestrator automatically generates these, but manual creation is also supported
+
+name: "{agent-name}"
+version: "1.0"
+created: "YYYY-MM-DD"
+tier: specialized  # specialized | integrated | elite
+
+# For integrated agents, list parent names
+parent_agents: []
+# Example: [frontend-specialist, api-specialist]
+
+# Primary area of expertise
+domain: "{domain-description}"
+
+# What this agent CAN do - be specific
+capabilities:
+  - "{Capability 1}"
+  - "{Capability 2}"
+  - "{Capability 3}"
+
+# What this agent CANNOT or SHOULD NOT do - set clear boundaries
+constraints:
+  - "{Constraint 1}"
+  - "{Constraint 2}"
+
+# Hints for the orchestrator about powerful combinations
+synergy_hints:
+  - agent: "{other-agent-name}"
+    reason: "{Why merging would be effective}"
+
+# Evolution metrics (auto-updated by orchestrator)
+metrics:
+  usage_count: 0
+  success_rate: 0.0
+  last_used: null
+  promotion_candidate: false
+
+# Task history for evolution tracking
+task_history: []
+# Example:
+# - date: "2025-01-15"
+#   task: "Implement user authentication"
+#   outcome: success
+#   notes: "Handled JWT tokens effectively"

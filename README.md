@@ -1,6 +1,6 @@
 # Autonomous Orchestration Ecosystem
 
-A self-evolving sub-agent management system for Claude Code. Instead of manually managing agents, let an orchestrator automatically compose, merge, and evolve agents based on task requirements.
+A self-evolving sub-agent management system for Claude Code. Instead of using pre-defined abstract agents, let the orchestrator dynamically create, integrate, and evolve agents based on actual task requirements.
 
 > **Original concept by [@shintaro_sprech](https://x.com/shintaro_sprech)**
 
@@ -8,37 +8,72 @@ A self-evolving sub-agent management system for Claude Code. Instead of manually
 
 ## Concept
 
-Multiple implementations feed into **Initial Sub-agent Pools**, which flow through the **Orchestrator Engine**. The engine continuously evolves agents through:
-
-- **Specialized Sub-agents** → 1st Gen Integration → 2nd Gen Integration
-- **Hyper-Elite Integration** → Ultimate Elite Integration
-- An **Infinite Evolution Cycle** that continuously improves agent capabilities
+The system implements an **Infinite Evolution Cycle**:
 
 ```
-Implementation → Multiple Sub-agents → Orchestrator Engine → Evolution Cycle → Hyper-Elite Entity
+Implementation → Initial Sub-agent Pool → Orchestrator Engine
+                                              ↓
+                                    Specialized Sub-agents
+                                              ↓
+                                    1st Gen Integration
+                                              ↓
+                                    2nd Gen Integration
+                                              ↓
+                                    Hyper-Elite Integration
+                                              ↓
+                                    Ultimate Elite Integration
+                                              ↓
+                                    Hyper-Elite Integrated Entity
+                                              ↓
+                                    ← Infinite Evolution Cycle →
 ```
 
 ## Key Features
 
-- **Autonomous agent selection**: Orchestrator evaluates tasks against existing agents
-- **Dynamic merging**: Combines agents when synergy improves outcomes
-- **Automatic specialization**: Creates new focused agents when gaps exist
-- **Infinite evolution**: Strong agents evolve through generations, weak ones fade
-- **Lineage tracking**: Merged agents remember their parents, enabling evolution chains
+- **Task-driven agent creation**: Agents are born from real task requirements, not abstract definitions
+- **Dynamic integration**: Merges agents when synergy improves outcomes
+- **Continuous evolution**: Strong agents evolve through generations, weak ones fade
+- **Elite promotion**: High-performing agents are promoted to elite status
+- **Lineage tracking**: Integrated agents remember their parents, enabling evolution chains
+
+## How It Works
+
+### 1. Task Analysis
+
+When a task is received, the orchestrator:
+- Scans the existing agent pool
+- Calculates coverage rate against task requirements
+
+### 2. Decision Matrix
+
+| Coverage Rate | Action |
+|---------------|--------|
+| **90%+** | Use existing agent directly |
+| **60-90%** | Create integrated agent from multiple sources |
+| **Below 60%** | Create new specialized agent |
+
+### 3. Evolution Tracking
+
+After task completion:
+- Update agent metrics (usage_count, success_rate)
+- Promote high-performers to elite status
 
 ## Directory Structure
 
 ```
 your-project/
 ├── .claude/
-│   ├── settings.json          # Hooks config (reminder on Task usage)
+│   ├── settings.json          # Hooks for orchestration
 │   └── agents/
-│       ├── selector.md        # Agent selection guide
-│       ├── registry.yaml      # Built-in agent list
-│       └── contexts/          # Project-specific contexts
-│           ├── _template.yaml
-│           └── {domain}.yaml
-└── CLAUDE.md                  # Selection criteria as Must rules
+│       ├── orchestrator.md    # Orchestrator definition
+│       ├── _template.md       # New agent template
+│       ├── manifests/         # Skill sheets (metadata + metrics)
+│       │   └── {agent}.yaml
+│       └── pool/              # Agent pool
+│           ├── specialized/   # Task-specific agents
+│           ├── integrated/    # Merged agents (1st/2nd Gen)
+│           └── elite/         # Hyper-Elite agents
+└── CLAUDE.md                  # Orchestration rules
 ```
 
 ## Quick Start
@@ -54,80 +89,57 @@ cp -r .claude /path/to/your/project/
 Add the content from `CLAUDE.md` to your project's CLAUDE.md:
 
 ```markdown
-## Agent Selection
+## Agent Orchestration
 
-**Must**: Select appropriate `subagent_type` when using Task tool for complex tasks.
+**Must**: All tasks must pass through the orchestrator workflow before execution.
 
-| Task Type | Agent to Use |
-|-----------|--------------|
-| Frontend | `frontend-dev` |
-| Backend | `backend-dev` |
-| Testing | `test-runner` |
-...
+### Core Principle
+
+**Do NOT use pre-defined abstract agents.** Instead:
+1. Create specialized agents from actual task requirements
+2. Integrate existing agents when synergy improves outcomes
+3. Let the agent pool evolve through continuous improvement
 ```
 
-### 3. Create project context (optional)
+### 3. Start using
 
-```bash
-cp .claude/agents/contexts/_template.yaml .claude/agents/contexts/frontend.yaml
-# Edit to add project-specific information
+When you give Claude Code a task:
+1. Orchestrator scans `pool/` for existing agents
+2. Calculates coverage against task requirements
+3. Creates/integrates/selects the optimal agent
+4. Executes task
+5. Updates metrics in `manifests/`
+6. Promotes high-performers to `elite/`
+
+## Example Evolution
+
+**First task**: "Create a REST API endpoint for user authentication"
+```
+Orchestrator: No existing agents → Create specialized agent
+→ Saved: pool/specialized/auth-api-specialist.md
+→ Created: manifests/auth-api-specialist.yaml
 ```
 
-### 4. Start using
-
-Use Claude Code as normal. Hooks will display a reminder when Task is used.
-
-## Built-in Agent List
-
-Available `subagent_type` for Claude Code's Task tool:
-
-| Agent | Purpose | Model |
-|-------|---------|-------|
-| `frontend-dev` | React/Vite frontend development | opus |
-| `backend-dev` | FastAPI backend development | opus |
-| `test-runner` | Test execution/creation | - |
-| `code-refactorer` | Code structure/readability improvement | - |
-| `security-auditor` | Security audit | opus |
-| `doc-writer` | Documentation creation | - |
-| `lib-researcher` | Library research | opus |
-| `Explore` | Codebase exploration (fast) | - |
-| `Plan` | Implementation planning design | - |
-| `general-purpose` | General multi-step tasks | - |
-
-See `.claude/agents/registry.yaml` for details.
-
-## Enforcement Mechanisms
-
-### 1. Hooks (automatic)
-
-`.claude/settings.json` displays a reminder when Task tool is used:
-
-```json
-{
-  "hooks": {
-    "PreToolUse": [{
-      "matcher": "Task",
-      "command": "echo '[Agent Selector] Please reference registry.yaml to select the optimal agent.'"
-    }]
-  }
-}
+**Second task**: "Add database validation to the auth API"
+```
+Orchestrator: auth-api-specialist (70%) + need DB skills
+→ Create integrated agent
+→ Saved: pool/integrated/merged-auth-db.md
+→ Created: manifests/merged-auth-db.yaml (parent_agents: [auth-api-specialist])
 ```
 
-### 2. CLAUDE.md Must Rules
-
-By documenting in CLAUDE.md, Claude recognizes these as rules to prioritize.
-
-### 3. Explicit Instructions
-
-Most reliable method:
-- "Please follow the selector approach"
-- "Check registry.yaml and select the appropriate agent"
+**After 5+ successful tasks with 80%+ success rate**:
+```
+Orchestrator: merged-auth-db qualifies for elite
+→ Moved: pool/integrated/merged-auth-db.md → pool/elite/merged-auth-db.md
+→ Updated: manifests/merged-auth-db.yaml (tier: elite)
+```
 
 ## Documentation
 
-- [Concept Details](docs/concept.md) - Design philosophy
+- [Concept Details](docs/concept.md) - Design philosophy and evolution mechanics
 - [Quick Start](docs/quickstart.md) - Setup instructions
-- [Advanced](docs/advanced.md) - Customization and operation
+- [Advanced](docs/advanced.md) - Customization and team operations
 
 ## License
 

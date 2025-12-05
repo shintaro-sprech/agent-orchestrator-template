@@ -1,91 +1,126 @@
-# CLAUDE.md - Agent Selector Template
+# CLAUDE.md - Autonomous Orchestration Ecosystem
 
 Add this section to your project's CLAUDE.md file.
 
 ---
 
-## Agent Selection
+## Agent Orchestration
 
-**Must**: Select appropriate `subagent_type` when using Task tool for complex tasks.
+**Must**: All tasks must pass through the orchestrator workflow before execution.
 
-### Selection Rules
+### Core Principle
 
-| Task Type | Agent to Use |
-|-----------|--------------|
-| Frontend (UI/React/CSS) | `frontend-dev` |
-| Backend (API/DB) | `backend-dev` |
-| Test creation/execution | `test-runner` |
-| Code refactoring | `code-refactorer` |
-| Security audit | `security-auditor` |
-| Documentation creation | `doc-writer` |
-| Library research | `lib-researcher` |
-| Codebase exploration | `Explore` |
-| Implementation planning | `Plan` |
-| Compound tasks | `general-purpose` |
+**Do NOT use pre-defined abstract agents.** Instead:
+1. Create specialized agents from actual task requirements
+2. Integrate existing agents when synergy improves outcomes
+3. Let the agent pool evolve through continuous improvement
 
 ### Workflow
 
-1. Identify task domain (frontend / backend / test / doc / security)
-2. Check `.claude/agents/registry.yaml` for relevant agent
-3. If `.claude/agents/contexts/{domain}.yaml` exists, check project-specific constraints
-4. Execute selected agent with Task tool
+```
+Task Received
+     ↓
+Scan pool/ for existing agents
+     ↓
+Calculate coverage rate against task requirements
+     ↓
+┌─────────────────────────────────────────────────────┐
+│ Coverage 90%+  → Use existing agent                 │
+│ Coverage 60-90% → Create integrated agent           │
+│ Coverage <60%  → Create new specialized agent       │
+└─────────────────────────────────────────────────────┘
+     ↓
+Execute task with selected/created agent
+     ↓
+Update manifests/ with metrics
+     ↓
+Promote to elite/ if qualified
+```
 
-### Handling Compound Tasks
-
-Split multi-domain tasks for execution:
+### Directory Structure
 
 ```
-Example: "Create API and call it from frontend"
-1. backend-dev → API implementation
-2. frontend-dev → Frontend implementation
-3. test-runner → Test creation
+.claude/agents/
+├── orchestrator.md        # Orchestrator definition (read first)
+├── _template.md           # Template for new agents
+├── manifests/             # Skill sheets (metadata + metrics)
+│   └── {agent-name}.yaml
+└── pool/                   # Agent pool
+    ├── specialized/        # Task-specific agents (newly created)
+    ├── integrated/         # Merged agents (1st/2nd Gen Integration)
+    └── elite/              # Hyper-Elite agents (proven performers)
 ```
 
-### Project-Specific Context
+### Decision Matrix
 
-Place domain-specific context files in `.claude/agents/contexts/` directory:
+| Coverage Rate | Action | Save Location |
+|---------------|--------|---------------|
+| **90%+** | Use existing agent directly | - |
+| **60-90%** | Merge source agents into integrated agent | `pool/integrated/` |
+| **Below 60%** | Create new specialized agent | `pool/specialized/` |
+
+### Agent Creation Rules
+
+When creating a new agent:
+
+1. **Copy `_template.md`** structure
+2. **Define in YAML frontmatter**:
+   ```yaml
+   ---
+   name: task-domain-specialist
+   description: One-line description
+   tools: Read, Grep, Glob, Edit, Write, Bash
+   model: opus
+   ---
+   ```
+3. **Write detailed system prompt** in body
+4. **Create skill sheet** in `manifests/{agent-name}.yaml`
+5. **Save agent** to appropriate `pool/` subdirectory
+
+### Integration Rules
+
+When merging agents:
+
+1. **Identify source agents** with partial coverage
+2. **Combine capabilities**, eliminate redundancy
+3. **Resolve conflicts** between source agents
+4. **Record lineage** in skill sheet `parent_agents` field
+5. **Save to `pool/integrated/merged-{source1}-{source2}.md`**
+
+### Evolution Tracking
+
+After every task execution, update the agent's skill sheet:
 
 ```yaml
-# Example: contexts/frontend.yaml
-domain: frontend
-applies_to: frontend-dev
-project_specifics:
-  stack:
-    - React 19
-    - Vite 7
-  constraints:
-    - Do not edit App.tsx directly, use subcomponents
+metrics:
+  usage_count: 5        # Increment
+  success_rate: 0.85    # (successes / usage_count)
+  last_used: 2025-01-15 # Current date
 ```
+
+### Elite Promotion
+
+An agent qualifies for elite status when:
+- `usage_count >= 5`
+- `success_rate >= 0.8`
+
+Action: Move from `specialized/` or `integrated/` to `elite/`
 
 ### Reference Files
 
-- `.claude/agents/registry.yaml` - Built-in agent list
-- `.claude/agents/selector.md` - Detailed selection guidance
-- `.claude/agents/contexts/` - Project-specific contexts
-- `.claude/settings.json` - Hooks configuration (reminder displayed on Task usage)
+- `.claude/agents/orchestrator.md` - Full orchestrator logic
+- `.claude/agents/_template.md` - Agent definition template
+- `.claude/agents/manifests/_template.yaml` - Skill sheet template
 
 ---
 
-## Technical Background
+## Quick Reference
 
-### Why This Design
-
-Claude Code's Task tool recognizes **only built-in subagent_type**.
-There is no functionality to dynamically load agents from custom `.md` files.
-
-Therefore, this template:
-
-1. **Uses built-in agents** - Uses mechanisms that reliably work
-2. **Supplements with context files** - Manages project-specific info in separate files
-3. **Uses Hooks for awareness** - Displays reminder on Task usage
-4. **Uses CLAUDE.md Must rules** - Documents standards for both humans and Claude to follow
-
-### Migration from v1.x
-
-| v1.x Concept | v2.x Equivalent |
-|--------------|-----------------|
-| orchestrator.md | selector.md (limited to guidance) |
-| manifests/*.yaml (skill sheets) | contexts/*.yaml (project context) |
-| Automatic merging | Deprecated (not possible with built-in) |
-| New agent generation | Deprecated (custom not recognized) |
-| Coverage rate calculation | Deprecated (no enforcement) |
+| Situation | Action |
+|-----------|--------|
+| New task received | Scan `pool/`, calculate coverage |
+| Perfect match exists | Use existing agent |
+| Partial matches | Create integrated agent |
+| No good match | Create specialized agent |
+| Task completed | Update `manifests/` metrics |
+| High-performing agent | Promote to `elite/` |

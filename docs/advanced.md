@@ -1,245 +1,242 @@
 # Advanced Guide
 
-Effective operation and customization methods for the Autonomous Orchestration Ecosystem.
+Strategies for optimizing your agent ecosystem.
 
-## Utilizing Project Contexts
+## Evolution Strategies
 
-### Defining Multiple Domains
+### Encouraging Strong Integrations
 
-For large projects, create multiple context files:
-
-```
-.claude/agents/contexts/
-├── _template.yaml
-├── frontend.yaml
-├── backend.yaml
-├── database.yaml
-└── infrastructure.yaml
-```
-
-### Linking Between Contexts
-
-Explicitly define related contexts:
+When you notice certain agent combinations working well together, update their skill sheets:
 
 ```yaml
-# frontend.yaml
-domain: frontend
-applies_to: frontend-dev
-
-related_contexts:
-  - context: backend
-    relationship: "API call destination, check endpoint definitions"
-  - context: database
-    relationship: "Required for understanding data structure"
+# auth-specialist.yaml
+synergy_hints:
+  - agent: db-specialist
+    reason: "Excellent for auth with persistent sessions"
+  - agent: cache-specialist
+    reason: "Essential for token caching"
 ```
 
-### Progressive Detailing
+These hints guide the orchestrator toward proven combinations.
 
-Start minimal, add details as needed:
+### Permanent Integrations
+
+If an integrated agent is selected repeatedly with high success:
+
+1. Review the integrated agent's definition
+2. Refine its capabilities based on observed usage
+3. Consider promoting to elite early if performance is exceptional
+
+### Controlled Specialization
+
+Prevent over-generalization by setting clear constraints:
 
 ```yaml
-# Initial (minimal)
-domain: frontend
-applies_to: frontend-dev
-project_specifics:
-  stack:
-    - React 19
-
-# After operation (detailed)
-domain: frontend
-applies_to: frontend-dev
-project_specifics:
-  stack:
-    - React 19
-    - Vite 7
-    - TypeScript strict
-    - TanStack Query
-    - Zustand
-  patterns:
-    - Component naming: PascalCase
-    - File naming: camelCase.tsx
-    - Data fetching: use useQuery
-  constraints:
-    - Class components prohibited
-    - any type prohibited
-  examples:
-    - task: "Add a new page"
-      approach: "Place in src/pages/, routing in App.tsx"
+# db-specialist.yaml
+constraints:
+  - No application logic
+  - No API design
+  - Query optimization only, not business rules
 ```
 
-## Customizing registry.yaml
+Clear boundaries prevent "god agents" that try to do everything poorly.
 
-### Project-Specific Agent Definitions
+## Pool Maintenance
 
-Add project-specific usage notes alongside built-in agents:
+### Identifying Dead Agents
+
+Agents that haven't been used may be:
+- Obsolete (superseded by integrations)
+- Too specialized (narrow use case)
+- Poorly defined (low coverage scores)
+
+Check `manifests/` for:
+```yaml
+metrics:
+  usage_count: 0
+  last_used: null  # Never used
+```
+
+Consider:
+- Merging into a broader agent
+- Refining capabilities for better matching
+- Removing if truly obsolete
+
+### Preventing Fragmentation
+
+Too many tiny agents creates overhead. Watch for:
+- Agents with only 1-2 capabilities
+- High overlap between agents
+- Frequent "create new" decisions for similar domains
+
+Solution: Lower the integration threshold or add synergy hints.
+
+### Gap Analysis
+
+Track "create new" events. Patterns reveal:
+- Domains you work in frequently
+- Missing coverage in your ecosystem
+- Opportunities for strategic agent creation
+
+## Advanced Skill Sheet Patterns
+
+### Versioned Evolution
+
+Track agent evolution through versions:
 
 ```yaml
-# Append to registry.yaml
-project_specific_usage:
-  frontend-dev:
-    additional_context: contexts/frontend.yaml
-    typical_tasks:
-      - "Create React components"
-      - "Fix UI bugs"
-      - "Responsive design"
-
-  backend-dev:
-    additional_context: contexts/backend.yaml
-    typical_tasks:
-      - "Add REST API endpoints"
-      - "Implement auth logic"
+name: api-specialist
+version: "2.0"
+changelog:
+  - version: "2.0"
+    date: 2025-01-15
+    changes: "Added GraphQL support via integration"
+  - version: "1.0"
+    date: 2025-01-01
+    changes: "Initial REST focus"
 ```
 
-### Recording Selection Patterns
+### Conditional Capabilities
 
-Record frequently used patterns for reuse:
+Some capabilities only apply in context:
 
 ```yaml
-# Append to registry.yaml
-common_patterns:
-  - name: "New feature (full-stack)"
-    steps:
-      - agent: Plan
-        purpose: "Design, impact assessment"
-      - agent: backend-dev
-        purpose: "API implementation"
-      - agent: frontend-dev
-        purpose: "UI implementation"
-      - agent: test-runner
-        purpose: "Test creation"
-
-  - name: "Bug fix"
-    steps:
-      - agent: Explore
-        purpose: "Investigate cause"
-      - agent: "{relevant-domain}"
-        purpose: "Fix"
-      - agent: test-runner
-        purpose: "Regression test"
+capabilities:
+  - REST API design
+  - GraphQL (when project uses Apollo)
+  - gRPC (when project uses Protocol Buffers)
 ```
 
-## Extending Hooks
+### Multi-Generation Lineage
 
-### More Detailed Reminders
+For deeply integrated agents:
 
-```json
-{
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Task",
-        "command": "echo '[Agent Selector] Checklist:\\n1. Select agent from registry.yaml\\n2. Check project constraints in contexts/\\n3. Consider splitting compound tasks'"
-      }
-    ]
-  }
-}
+```yaml
+name: hyper-fullstack-v3
+tier: elite
+parent_agents: [merged-frontend-backend-v2, devops-specialist]
+lineage:
+  generation_1:
+    - frontend-specialist
+    - backend-specialist
+  generation_2:
+    - merged-frontend-backend
+  generation_3:
+    - merged-frontend-backend-v2 (added caching)
+  generation_4:
+    - hyper-fullstack-v3 (current)
 ```
 
-### Additional Checks on Specific Agent Usage
+## Customizing the Orchestrator
 
-```json
-{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Task",
-        "command": "echo '[Agent Selector] Task completed. Consider running test-runner if testing is needed.'"
-      }
-    ]
-  }
-}
+### Adjusting Thresholds
+
+Default decision matrix:
+- 90%+ → Use existing
+- 60-90% → Integrate
+- <60% → Create new
+
+Modify in `orchestrator.md` based on your preferences:
+
+**Conservative (prefer existing)**:
+```
+85%+ → Use existing
+50-85% → Integrate
+<50% → Create new
+```
+
+**Aggressive (prefer specialization)**:
+```
+95%+ → Use existing
+70-95% → Integrate
+<70% → Create new
+```
+
+### Adding Decision Factors
+
+Beyond coverage, consider:
+
+```markdown
+### Additional Factors
+
+- **Task criticality**: High-stakes tasks prefer elite agents
+- **Time constraints**: Urgent tasks use existing when possible
+- **Learning mode**: Experimental tasks encourage new agents
 ```
 
 ## Team Operations
 
-### New Member Onboarding
+### Shared Agent Pool
 
-1. Read the "Agent Selection" section in CLAUDE.md
-2. Review agent list in registry.yaml
-3. Understand project-specific constraints via contexts/*.yaml
-
-### Context Update Rules
-
-```markdown
-## Context Update Rules
-
-1. When discovering new patterns, add to contexts/*.yaml
-2. When constraints change, update constraints
-3. Record major changes in CLAUDE.md changelog
-4. For deprecated information, comment out with # instead of deleting
-```
-
-### Review Checklist
-
-Checkpoints during PR review:
-
-- [ ] Was the appropriate agent used?
-- [ ] Are there any context constraint violations?
-- [ ] If new patterns exist, are they added to contexts?
-
-## Limitations and Countermeasures
-
-### When Agent Selection is Ignored
-
-**Countermeasure**: Explicit instructions
+For team projects, the `pool/` directory should be version controlled:
 
 ```
-"Please follow the selector.md procedure.
-First check registry.yaml, then check contexts/,
-then select the appropriate agent."
+.claude/agents/pool/        # Committed to git
+.claude/agents/manifests/   # Committed to git
 ```
 
-### When Context is Too Long
+This allows:
+- Team members to benefit from each other's agent evolutions
+- Review of new/integrated agents via PR
+- Tracking of ecosystem growth over time
 
-**Countermeasure**: Split and prioritize
+### Agent Review Process
 
-```yaml
-# Only most important constraints in constraints
-constraints:
-  - UTF-8 required
-  - Direct App.tsx editing prohibited
+When a new agent is created or integrated:
 
-# Details in notes (reference is optional)
-notes: |
-  For detailed patterns and sample code,
-  see docs/coding-guidelines.md
+1. Check the agent definition for quality
+2. Verify capabilities match actual task requirements
+3. Ensure constraints are appropriate
+4. Review synergy_hints for accuracy
+
+### Metrics Dashboard
+
+Periodically review:
+
+```bash
+# Find most-used agents
+grep -r "usage_count" .claude/agents/manifests/ | sort -t: -k2 -n -r
+
+# Find highest success rates
+grep -r "success_rate" .claude/agents/manifests/ | sort -t: -k2 -n -r
+
+# Find promotion candidates
+grep -r "promotion_candidate: true" .claude/agents/manifests/
 ```
 
-### Complex Task Judgment
+## Future Possibilities
 
-**Countermeasure**: Use Plan agent first
+### Automated Pruning
 
+Script to identify and archive unused agents:
+
+```bash
+# Find agents unused for 30+ days
+find .claude/agents/pool -name "*.md" -mtime +30
 ```
-"This task seems complex, so first use the Plan agent
-to create an implementation plan. Then follow the plan
-to use appropriate agents sequentially."
+
+### Cross-Project Pollination
+
+Export successful elite agents for use in other projects:
+
+```bash
+cp .claude/agents/pool/elite/proven-agent.md ~/.claude/shared-agents/
 ```
 
-## Metrics and Improvement
+### Ecosystem Analytics
 
-### Manual Retrospective
-
-Periodically check the following:
-
-1. **Frequently used agents**: Update typical_tasks in registry.yaml
-2. **Unused agents**: Consider if truly unnecessary
-3. **Recurring patterns**: Add to common_patterns
-4. **Constraint violations**: Emphasize or detail constraints
-
-### Context Maturity
-
-```
-Level 1: Basic stack only
-Level 2: Added patterns and constraints
-Level 3: Added examples and related_contexts
-Level 4: Entire team participates in updates
-```
+Track over time:
+- Total agents created
+- Integration success rate
+- Elite promotion rate
+- Most effective lineages
 
 ## Summary
 
-Key points for effective operation:
+Effective orchestration requires:
 
-1. **Start small**: Begin with minimal configuration, gradually detail
-2. **Be explicit**: Specify agents directly when certainty is needed
-3. **Continuously update**: Accumulate new insights in contexts
-4. **Share with team**: Use CLAUDE.md and contexts as documentation
+1. **Trust the process**: Let the orchestrator manage agent creation/integration
+2. **Maintain quality**: Review new agents, update skill sheets
+3. **Watch for patterns**: Repeated integrations suggest permanent mergers
+4. **Prune regularly**: Remove or refine underperforming agents
+5. **Share knowledge**: Version control the pool for team benefit
