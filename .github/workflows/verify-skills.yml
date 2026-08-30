@@ -1,0 +1,28 @@
+name: Verify shared skills
+
+on:
+  pull_request:
+    paths:
+      - ".agents/skills/**"
+      - ".claude/skills/**"
+      - "scripts/verify-skill-sync.py"
+      - ".github/workflows/verify-skills.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".agents/skills/**"
+      - ".claude/skills/**"
+      - "scripts/verify-skill-sync.py"
+      - ".github/workflows/verify-skills.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-skill-sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Verify Codex and Claude skill copies
+        run: python3 scripts/verify-skill-sync.py

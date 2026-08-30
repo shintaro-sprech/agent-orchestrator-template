@@ -6,7 +6,18 @@ Add this section to your project's CLAUDE.md file.
 
 ## Agent Orchestration
 
-**Must**: All tasks must pass through the orchestrator workflow before execution.
+**Must**: All implementation tasks must pass through the orchestrator workflow before execution.
+
+### Decision Gate Exception
+
+An explicitly invoked analysis-only Skill may run before `/task` when it does not modify code, files, external systems, or production state.
+Use `/evaluation-first-decision` to create a Decision Card containing the verdict, evidence, guardrails, stop conditions, and rollback plan.
+
+- `GO` or `PILOT` does not itself authorize execution.
+- For `HIGH` or `CRITICAL` risk, record the responsible human decision owner.
+- When execution is approved, include the Decision Card in the `/task` input.
+- The orchestrator must preserve the approved scope, guardrails, stop conditions, and rollback requirements.
+- `HOLD` or `STOP` blocks execution until the stated verdict-changing conditions are satisfied.
 
 ### Core Principle
 
@@ -18,7 +29,13 @@ Add this section to your project's CLAUDE.md file.
 ### Workflow
 
 ```
-Task Received
+Consequential decision (when applicable)
+     ↓
+/evaluation-first-decision
+     ↓
+Decision Card + human approval where required
+     ↓
+Task Received through /task
      ↓
 Scan pool/ for existing agents
      ↓
@@ -30,7 +47,7 @@ Calculate coverage rate against task requirements
 │ Coverage <60%  → Create new specialized agent       │
 └─────────────────────────────────────────────────────┘
      ↓
-Execute task with selected/created agent
+Execute task within approved guardrails
      ↓
 Update manifests/ with metrics
      ↓
@@ -40,15 +57,21 @@ Promote to elite/ if qualified
 ### Directory Structure
 
 ```
-.claude/agents/
-├── orchestrator.md        # Orchestrator definition (read first)
-├── _template.md           # Template for new agents
-├── manifests/             # Skill sheets (metadata + metrics)
-│   └── {agent-name}.yaml
-└── pool/                   # Agent pool
-    ├── specialized/        # Task-specific agents (newly created)
-    ├── integrated/         # Merged agents (1st/2nd Gen Integration)
-    └── elite/              # Hyper-Elite agents (proven performers)
+.claude/
+├── skills/
+│   └── evaluation-first-decision/
+│       ├── SKILL.md
+│       ├── references/
+│       └── assets/
+├── agents/
+│   ├── orchestrator.md        # Orchestrator definition (read first)
+│   ├── _template.md           # Template for new agents
+│   ├── manifests/             # Skill sheets (metadata + metrics)
+│   │   └── {agent-name}.yaml
+│   └── pool/                  # Agent pool
+│       ├── specialized/       # Task-specific agents (newly created)
+│       ├── integrated/        # Merged agents (1st/2nd Gen Integration)
+│       └── elite/             # Hyper-Elite agents (proven performers)
 ```
 
 ### Decision Matrix
@@ -108,6 +131,7 @@ Action: Move from `specialized/` or `integrated/` to `elite/`
 
 ### Reference Files
 
+- `.claude/skills/evaluation-first-decision/SKILL.md` - Decision gate logic
 - `.claude/agents/orchestrator.md` - Full orchestrator logic
 - `.claude/agents/_template.md` - Agent definition template
 - `.claude/agents/manifests/_template.yaml` - Skill sheet template
@@ -118,6 +142,9 @@ Action: Move from `specialized/` or `integrated/` to `elite/`
 
 | Situation | Action |
 |-----------|--------|
+| Consequential decision before implementation | Run `/evaluation-first-decision` |
+| Verdict is HOLD or STOP | Do not execute; satisfy verdict-changing conditions first |
+| GO or approved PILOT | Pass the Decision Card to `/task` |
 | New task received | Scan `pool/`, calculate coverage |
 | Perfect match exists | Use existing agent |
 | Partial matches | Create integrated agent |
