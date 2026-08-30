@@ -36,6 +36,19 @@ Implementation → Initial Sub-agent Pool → Orchestrator Engine
 - **Elite promotion**: High-performing agents are promoted to elite status
 - **Lineage tracking**: Integrated agents remember their parents, enabling evolution chains
 
+## Evaluation-first Decision Skill
+
+The repository also includes `evaluation-first-decision`, a shared Agent Skill for evaluating consequential decisions before execution.
+It defines success criteria and guardrails before recommending an option, separates facts from assumptions, compares the status quo, and returns one verdict: `GO`, `PILOT`, `HOLD`, or `STOP`.
+
+- **Claude Code**: `/evaluation-first-decision <decision to evaluate>`
+- **Codex**: `$evaluation-first-decision <decision to evaluate>`
+- **Detailed guide**: [docs/evaluation-first-decision.md](docs/evaluation-first-decision.md)
+- **Skill index**: [SKILLS.md](SKILLS.md)
+
+Use this Skill to produce a Decision Card first. When implementation is approved, pass that card to `/task` so the orchestrator can execute within the declared constraints and stop conditions.
+Global installation scripts for macOS/Linux and Windows are included under `scripts/`.
+
 ## Usage: Slash Command
 
 **Use the `/task` slash command to activate the orchestration system.**
@@ -87,10 +100,15 @@ After task completion:
 
 ```
 your-project/
+├── .agents/
+│   └── skills/
+│       └── evaluation-first-decision/  # Codex project Skill
 ├── .claude/
 │   ├── settings.json          # Hooks for orchestration
 │   ├── commands/
 │   │   └── task.md            # Slash command definition
+│   ├── skills/
+│   │   └── evaluation-first-decision/  # Claude Code project Skill
 │   └── agents/
 │       ├── orchestrator.md    # Orchestrator definition
 │       ├── _template.md       # New agent template
@@ -100,6 +118,7 @@ your-project/
 │           ├── specialized/   # Task-specific agents
 │           ├── integrated/    # Merged agents (1st/2nd Gen)
 │           └── elite/         # Hyper-Elite agents
+├── scripts/                   # Skill install and sync checks
 └── CLAUDE.md                  # Orchestration rules
 ```
 
@@ -113,6 +132,9 @@ cp -r .claude /path/to/your/project/
 # Windows (PowerShell)
 Copy-Item -Recurse .claude C:\path\to\your\project\
 ```
+
+To copy the Codex Skill as well, also copy `.agents/`.
+For a user-wide installation in both Codex and Claude Code, run one of the installers documented in [the Skill guide](docs/evaluation-first-decision.md).
 
 ### 2. Add to CLAUDE.md
 
@@ -174,6 +196,7 @@ Orchestrator: merged-auth-db qualifies for elite
 
 ## Documentation
 
+- [Evaluation-first Decision Skill](docs/evaluation-first-decision.md) - Evidence-first decision gates and installation
 - [Concept Details](docs/concept.md) - Design philosophy and evolution mechanics
 - [Quick Start](docs/quickstart.md) - Setup instructions
 - [Advanced](docs/advanced.md) - Customization and team operations

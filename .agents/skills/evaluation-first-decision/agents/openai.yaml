@@ -1,0 +1,9 @@
+interface:
+  display_name: "評価ファースト意思決定"
+  short_description: "重要判断を証拠・ガードレール・最小実験で判定"
+  default_prompt: >
+    この判断を評価ファーストで分析し、GO、PILOT、HOLD、STOPのいずれかで判定してください。
+    成功条件とガードレールを推薦より先に定義し、最大の反証と次の一手も示してください。
+
+policy:
+  allow_implicit_invocation: false
